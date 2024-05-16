@@ -2,8 +2,10 @@ import groovy.text.SimpleTemplateEngine
 
 buildscript {
 	repositories {
-		maven { url "https://repo.spring.io/plugins-release" }
-	}
+		//maven { url "https://repo.spring.io/plugins-release" }
+		maven { url "https://maven.aliyun.com/repository/gradle-plugin"}
+		maven { url "https://maven.aliyun.com/repository/spring-plugin" }
+		}
 	dependencies {
 		classpath("org.springframework.build.gradle:propdeps-plugin:0.0.7")
 		classpath("io.spring.gradle:spring-io-plugin:0.0.4.RELEASE")
@@ -11,10 +13,12 @@ buildscript {
 		classpath('me.champeau.gradle:gradle-javadoc-hotfix-plugin:0.1')
 		classpath('org.asciidoctor:asciidoctor-gradle-plugin:1.5.1')
 		classpath("io.spring.gradle:docbook-reference-plugin:0.3.1")
+		classpath("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.1")
+		classpath("io.spring.gradle:dependency-management-plugin:0.6.1.RELEASE")
 	}
 }
 
-apply plugin: 'sonar-runner'
+apply plugin: "org.sonarqube"
 apply plugin: 'base'
 
 description = 'Spring Security'
@@ -40,8 +44,8 @@ allprojects {
 	eclipse.project.name = "${project.name}-4.0.x"
 }
 
-sonarRunner {
-	sonarProperties {
+sonarqube {
+	properties {
 		property "sonar.java.coveragePlugin", "jacoco"
 		property "sonar.projectName", "Spring Security"
 		property "sonar.jacoco.reportPath", "${buildDir.name}/jacoco.exec"
@@ -82,7 +86,7 @@ configure(allprojects - javaProjects) {
 
 configure(subprojects - coreModuleProjects - project(':spring-security-samples-messages-jc') - project(':spring-security-bom')) {
 	tasks.findByPath("artifactoryPublish")?.enabled = false
-	sonarRunner {
+	sonarqube {
 		skipProject = true
 	}
 }

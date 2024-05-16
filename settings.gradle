@@ -16,16 +16,16 @@ def String[] modules = [
 ]
 
 def String[] samples = [
-	'tutorial-xml',
+	//'tutorial-xml',
 	'contacts-xml',
 	'chat-jc',
-	'openid-xml',
+	//'openid-xml',
 	'aspectj-xml',
 	'aspectj-jc',
 	'data-jc',
-	'gae-xml',
+	//'gae-xml',
 	'dms-xml',
-	'preauth-xml',
+	//'preauth-xml',
 	'cas/server',
 	'cas/sample-xml',
 	'ldap-xml',
