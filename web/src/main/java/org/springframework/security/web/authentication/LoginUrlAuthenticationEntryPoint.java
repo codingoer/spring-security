@@ -114,6 +114,7 @@ public class LoginUrlAuthenticationEntryPoint implements AuthenticationEntryPoin
 
 	/**
 	 * Performs the redirect (or forward) to the login form URL.
+	 * 仅负责计算登录页 URL 并执行重定向/转发
 	 */
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,

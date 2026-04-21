@@ -215,7 +215,9 @@ public class ExceptionTranslationFilter extends GenericFilterBean implements Mes
 		// existing Authentication is no longer considered valid
 		SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
 		this.securityContextHolderStrategy.setContext(context);
+		// 保存请求，用于登录成功后重定向
 		this.requestCache.saveRequest(request, response);
+		// 执行重定向
 		this.authenticationEntryPoint.commence(request, response, reason);
 	}
 

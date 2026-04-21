@@ -19,8 +19,8 @@ package org.springframework.security.config.annotation;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * A base {@link SecurityBuilder} that ensures the object being built is only built one
- * time.
+ * A base {@link SecurityBuilder} that ensures the object being built is only built one time.
+ * 一个基类SecurityBuilder，确保构建的对象只构建一次。
  *
  * @param <O> the type of Object that is being built
  * @author Rob Winch

@@ -102,8 +102,8 @@ public class OAuth2AuthorizationRequestRedirectFilter extends OncePerRequestFilt
 	private AuthenticationFailureHandler authenticationFailureHandler = this::unsuccessfulRedirectForAuthorization;
 
 	/**
-	 * Constructs an {@code OAuth2AuthorizationRequestRedirectFilter} using the provided
-	 * parameters.
+	 * Constructs an {@code OAuth2AuthorizationRequestRedirectFilter} using the provided parameters.
+	 *
 	 * @param clientRegistrationRepository the repository of client registrations
 	 */
 	public OAuth2AuthorizationRequestRedirectFilter(ClientRegistrationRepository clientRegistrationRepository) {
@@ -111,8 +111,8 @@ public class OAuth2AuthorizationRequestRedirectFilter extends OncePerRequestFilt
 	}
 
 	/**
-	 * Constructs an {@code OAuth2AuthorizationRequestRedirectFilter} using the provided
-	 * parameters.
+	 * Constructs an {@code OAuth2AuthorizationRequestRedirectFilter} using the provided parameters.
+	 *
 	 * @param clientRegistrationRepository the repository of client registrations
 	 * @param authorizationRequestBaseUri the base {@code URI} used for authorization
 	 * requests
@@ -126,8 +126,8 @@ public class OAuth2AuthorizationRequestRedirectFilter extends OncePerRequestFilt
 	}
 
 	/**
-	 * Constructs an {@code OAuth2AuthorizationRequestRedirectFilter} using the provided
-	 * parameters.
+	 * Constructs an {@code OAuth2AuthorizationRequestRedirectFilter} using the provided parameters.
+	 *
 	 * @param authorizationRequestResolver the resolver used for resolving authorization
 	 * requests
 	 * @since 5.1
@@ -182,9 +182,12 @@ public class OAuth2AuthorizationRequestRedirectFilter extends OncePerRequestFilt
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+
 		try {
+			// 解析当前请求，判断是否匹配授权请求路径
 			OAuth2AuthorizationRequest authorizationRequest = this.authorizationRequestResolver.resolve(request);
 			if (authorizationRequest != null) {
+				// 匹配成功 → 保存授权请求、重定向到授权服务器
 				this.sendRedirectForAuthorization(request, response, authorizationRequest);
 				return;
 			}
@@ -231,9 +234,22 @@ public class OAuth2AuthorizationRequestRedirectFilter extends OncePerRequestFilt
 		}
 	}
 
+	/**
+	 * 将用户代理重定向到授权服务器的授权端点
+	 * <p>
+	 * 对于授权码模式，会先将授权请求保存到存储库中，以便在回调时进行验证（如校验 state 参数防止 CSRF 攻击）。
+	 * 然后执行 HTTP 重定向，将用户导向授权服务器的授权页面。
+	 * </p>
+	 *
+	 * @param request              当前的 HTTP 请求
+	 * @param response             当前的 HTTP 响应
+	 * @param authorizationRequest 已构建的 OAuth 2.0 授权请求，包含授权端点 URI、客户端 ID、scope、state 等参数
+	 * @throws IOException 如果重定向过程中发生 I/O 错误
+	 */
 	private void sendRedirectForAuthorization(HttpServletRequest request, HttpServletResponse response,
 			OAuth2AuthorizationRequest authorizationRequest) throws IOException {
 		if (AuthorizationGrantType.AUTHORIZATION_CODE.equals(authorizationRequest.getGrantType())) {
+			// 保存授权请求
 			this.authorizationRequestRepository.saveAuthorizationRequest(authorizationRequest, request, response);
 		}
 		this.authorizationRedirectStrategy.sendRedirect(request, response,

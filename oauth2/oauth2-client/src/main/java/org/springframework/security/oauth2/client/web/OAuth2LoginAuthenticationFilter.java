@@ -158,6 +158,17 @@ public class OAuth2LoginAuthenticationFilter extends AbstractAuthenticationProce
 		this.authorizedClientRepository = authorizedClientRepository;
 	}
 
+	/**
+	 * http://127.0.0.1:8080/login/oauth2/code/messaging-client-oidc?
+	 * code=nHXv7qxQKNMgLwqakDYLddvxzDOfTfBhm1mbJnE4t0q6TM_1_S4CCgQlvgv3TqdfU3Meq5nBzvY7_f4PwT7JSabAp9u2A3R3SybMm8ZJKNc5G7lrWrZT_sb1HS6kZSGD
+	 * &state=DnzVly8NDtTFPqID7d7vbBMzPOeYBomICv6xtjlf6bg%3D
+	 *
+	 * @param request from which to extract parameters and perform the authentication
+	 * @param response the response, which may be needed if the implementation has to do a
+	 * redirect as part of a multi-stage authentication process (such as OIDC).
+	 * @return
+	 * @throws AuthenticationException
+	 */
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {

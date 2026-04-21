@@ -136,6 +136,7 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 
 	private boolean allowSessionCreation = true;
 
+	// 认证成功后的处理器
 	private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
 
 	private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
@@ -320,8 +321,11 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
 		SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
+		// 将认证后的Authentication放入Context
 		context.setAuthentication(authResult);
+		// 将 Context 存入 SecurityContextHolderStrategy
 		this.securityContextHolderStrategy.setContext(context);
+		// 持久化到 Session
 		this.securityContextRepository.saveContext(context, request, response);
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug(LogMessage.format("Set SecurityContextHolder to %s", authResult));
@@ -330,6 +334,7 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 		if (this.eventPublisher != null) {
 			this.eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(authResult, this.getClass()));
 		}
+		// 执行成功处理器
 		this.successHandler.onAuthenticationSuccess(request, response, authResult);
 	}
 

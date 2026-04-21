@@ -97,11 +97,29 @@ public final class AuthenticationPrincipalArgumentResolver implements HandlerMet
 
 	private BeanResolver beanResolver;
 
+	/**
+	 * 检查方法参数是否包含 {@link AuthenticationPrincipal} 注解
+	 * @param parameter the method parameter to check
+	 * @return
+	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		return findMethodAnnotation(AuthenticationPrincipal.class, parameter) != null;
 	}
 
+	/**
+	  * 解析方法参数，将当前认证主体的 principal 对象绑定到控制器方法参数
+	  * <p>
+	  * 从安全上下文中获取认证信息，提取 principal，并根据注解配置进行可选的
+	  * SpEL 表达式求值和类型检查
+	  * </p>
+	  * @param parameter 方法参数，包含参数类型和注解信息
+	  * @param mavContainer 模型和视图容器，本方法不使用此参数
+	  * @param webRequest 原生 Web 请求，本方法不使用此参数
+	  * @param binderFactory 数据绑定器工厂，本方法不使用此参数
+	  * @return 解析后的 principal 对象，如果认证为 null、表达式求值为 null 或类型不匹配时返回 null
+	  * @throws ClassCastException 当 principal 类型与方法参数类型不匹配且注解配置了 errorOnInvalidType 为 true 时抛出
+	  */
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {

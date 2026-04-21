@@ -72,6 +72,7 @@ public class SavedRequestAwareAuthenticationSuccessHandler extends SimpleUrlAuth
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws ServletException, IOException {
+		// 从RequestCache取出SavedRequest
 		SavedRequest savedRequest = this.requestCache.getRequest(request, response);
 		if (savedRequest == null) {
 			super.onAuthenticationSuccess(request, response, authentication);
@@ -86,7 +87,9 @@ public class SavedRequestAwareAuthenticationSuccessHandler extends SimpleUrlAuth
 		}
 		clearAuthenticationAttributes(request);
 		// Use the DefaultSavedRequest URL
+		// 得到 /oauth2/authorize?response_type=code&...
 		String targetUrl = savedRequest.getRedirectUrl();
+		// 执行重定向
 		getRedirectStrategy().sendRedirect(request, response, targetUrl);
 	}
 

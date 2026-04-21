@@ -358,6 +358,16 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
 	 */
 	protected abstract O performBuild() throws Exception;
 
+
+	/**
+	 * 初始化所有已注册的安全配置器
+	 * <p>
+	 * 按顺序调用每个 {@link SecurityConfigurer} 的 {@code init} 方法，完成配置器的初始化阶段。
+	 * 首先处理主配置器集合，然后处理在初始化过程中添加的配置器。
+	 * </p>
+	 *
+	 * @throws Exception 如果任一配置器的初始化过程抛出异常
+	 */
 	@SuppressWarnings("unchecked")
 	private void init() throws Exception {
 		Collection<SecurityConfigurer<O, B>> configurers = getConfigurers();

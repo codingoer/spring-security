@@ -179,8 +179,9 @@ public class HttpSessionRequestCache implements RequestCache {
 	}
 
 	/**
-	 * Specify the name of a query parameter that is added to the URL that specifies the
-	 * request cache should be checked in
+	 * Specify the name of a query parameter that is added to the URL that specifies the request cache should be checked in
+	 * 指定一个要添加到 URL 中的查询参数的名称，该参数用于指示应在请求中检查缓存。
+	 * <p>
 	 * {@link #getMatchingRequest(HttpServletRequest, HttpServletResponse)}
 	 * @param matchingRequestParameterName the parameter name that must be in the request
 	 * for {@link #getMatchingRequest(HttpServletRequest, HttpServletResponse)} to check

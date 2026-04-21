@@ -103,11 +103,14 @@ public final class DefaultOAuth2AuthorizationRequestResolver implements OAuth2Au
 
 	@Override
 	public OAuth2AuthorizationRequest resolve(HttpServletRequest request) {
+		// 从 URL 路径提取 registrationId
+		// /oauth2/authorization/messaging-client-oidc -> registrationId = "messaging-client-oidc"
 		String registrationId = resolveRegistrationId(request);
 		if (registrationId == null) {
 			return null;
 		}
 		String redirectUriAction = getAction(request, "login");
+		// 解析构建 OAuth2AuthorizationRequest
 		return resolve(request, registrationId, redirectUriAction);
 	}
 
@@ -134,6 +137,14 @@ public final class DefaultOAuth2AuthorizationRequestResolver implements OAuth2Au
 		this.authorizationRequestCustomizer = authorizationRequestCustomizer;
 	}
 
+
+	/**
+	 * 从请求中获取 action 参数，若不存在则返回默认值
+	 *
+	 * @param request       HTTP 请求对象
+	 * @param defaultAction 当 action 参数为 null 时返回的默认值
+	 * @return action 参数的值，若不存在则返回 defaultAction
+	 */
 	private String getAction(HttpServletRequest request, String defaultAction) {
 		String action = request.getParameter("action");
 		if (action == null) {
@@ -142,6 +153,16 @@ public final class DefaultOAuth2AuthorizationRequestResolver implements OAuth2Au
 		return action;
 	}
 
+
+	/**
+	 * 解析并构建 OAuth2 授权请求
+	 *
+	 * @param request           当前 HTTP 请求
+	 * @param registrationId    客户端注册 ID，用于从仓库中查找对应的 {@link ClientRegistration}
+	 * @param redirectUriAction 重定向 URI 动作，用于构建回调地址
+	 * @return 构建完成的 OAuth2 授权请求对象
+	 * @throws InvalidClientRegistrationIdException 当指定的 registrationId 无效时抛出
+	 */
 	private OAuth2AuthorizationRequest resolve(HttpServletRequest request, String registrationId,
 			String redirectUriAction) {
 		if (registrationId == null) {
@@ -168,6 +189,19 @@ public final class DefaultOAuth2AuthorizationRequestResolver implements OAuth2Au
 		return builder.build();
 	}
 
+	/**
+	 * 根据客户端注册信息获取 OAuth2 授权请求构建器
+	 * <p>
+	 * 仅支持授权码类型的授权流程。对于 OpenID Connect 客户端，
+	 * 如果请求范围包含 "openid"，会自动应用 nonce 参数。
+	 * 对于使用公共客户端认证方式（无客户端密钥）的客户端，
+	 * 会自动应用 PKCE（Proof Key for Code Exchange）增强安全性。
+	 * </p>
+	 *
+	 * @param clientRegistration OAuth2 客户端注册信息，包含授权类型、请求范围、认证方式等配置
+	 * @return OAuth2 授权请求构建器，已根据客户端配置预置必要的参数
+	 * @throws IllegalArgumentException 当客户端注册的授权类型不是授权码类型时抛出
+	 */
 	private OAuth2AuthorizationRequest.Builder getBuilder(ClientRegistration clientRegistration) {
 		if (AuthorizationGrantType.AUTHORIZATION_CODE.equals(clientRegistration.getAuthorizationGrantType())) {
 			// @formatter:off
