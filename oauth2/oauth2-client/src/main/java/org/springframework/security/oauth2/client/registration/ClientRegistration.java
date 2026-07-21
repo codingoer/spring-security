@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * A representation of a client registration with an OAuth 2.0 or OpenID Connect 1.0
- * Provider.
+ * Provider. 向 OAuth2.0 或者 OIDC提供商 注册客户的表现形式
  *
  * @author Joe Grandja
  * @author Michael Sosa

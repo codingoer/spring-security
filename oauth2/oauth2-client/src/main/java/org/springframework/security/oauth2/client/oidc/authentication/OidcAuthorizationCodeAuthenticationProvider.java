@@ -131,6 +131,7 @@ public class OidcAuthorizationCodeAuthenticationProvider implements Authenticati
 			// and let OAuth2LoginAuthenticationProvider handle it instead
 			return null;
 		}
+		// 构建授权请求和授权响应
 		OAuth2AuthorizationRequest authorizationRequest = authorizationCodeAuthentication.getAuthorizationExchange()
 			.getAuthorizationRequest();
 		OAuth2AuthorizationResponse authorizationResponse = authorizationCodeAuthentication.getAuthorizationExchange()
@@ -143,8 +144,10 @@ public class OidcAuthorizationCodeAuthenticationProvider implements Authenticati
 			OAuth2Error oauth2Error = new OAuth2Error(INVALID_STATE_PARAMETER_ERROR_CODE);
 			throw new OAuth2AuthenticationException(oauth2Error, oauth2Error.toString());
 		}
+		// 获取token响应
 		OAuth2AccessTokenResponse accessTokenResponse = getResponse(authorizationCodeAuthentication);
 		ClientRegistration clientRegistration = authorizationCodeAuthentication.getClientRegistration();
+		// 校验 Token Response 中是否包含 ID Token
 		Map<String, Object> additionalParameters = accessTokenResponse.getAdditionalParameters();
 		if (!additionalParameters.containsKey(OidcParameterNames.ID_TOKEN)) {
 			OAuth2Error invalidIdTokenError = new OAuth2Error(INVALID_ID_TOKEN_ERROR_CODE,
@@ -154,6 +157,7 @@ public class OidcAuthorizationCodeAuthenticationProvider implements Authenticati
 			throw new OAuth2AuthenticationException(invalidIdTokenError, invalidIdTokenError.toString());
 		}
 		OidcIdToken idToken = createOidcToken(clientRegistration, accessTokenResponse);
+		// 验证nonce
 		validateNonce(authorizationRequest, idToken);
 		OidcUser oidcUser = this.userService.loadUser(new OidcUserRequest(clientRegistration,
 				accessTokenResponse.getAccessToken(), idToken, additionalParameters));
@@ -232,6 +236,15 @@ public class OidcAuthorizationCodeAuthenticationProvider implements Authenticati
 		return OAuth2LoginAuthenticationToken.class.isAssignableFrom(authentication);
 	}
 
+
+	/**
+	 * 从 OAuth2 访问令牌响应中创建并验证 OIDC ID 令牌
+	 *
+	 * @param clientRegistration  OAuth2 客户端注册信息，包含用于验证 ID 令牌的配置
+	 * @param accessTokenResponse 包含 ID 令牌字符串的访问令牌响应
+	 * @return 已验证的 OIDC ID 令牌对象，包含令牌值、签发时间、过期时间和声明信息
+	 * @throws OAuth2AuthenticationException 当 ID 令牌验证失败时抛出
+	 */
 	private OidcIdToken createOidcToken(ClientRegistration clientRegistration,
 			OAuth2AccessTokenResponse accessTokenResponse) {
 		JwtDecoder jwtDecoder = this.jwtDecoderFactory.createDecoder(clientRegistration);
@@ -241,6 +254,15 @@ public class OidcAuthorizationCodeAuthenticationProvider implements Authenticati
 		return idToken;
 	}
 
+
+	/**
+	 * 从 OAuth2 访问令牌响应中解析并验证 ID Token
+	 *
+	 * @param accessTokenResponse OAuth2 访问令牌响应，包含附加参数中的 ID Token
+	 * @param jwtDecoder          用于解码和验证 JWT 的解码器
+	 * @return 解码并验证后的 JWT 对象
+	 * @throws OAuth2AuthenticationException 当 ID Token 解析或验证失败时抛出
+	 */
 	private Jwt getJwt(OAuth2AccessTokenResponse accessTokenResponse, JwtDecoder jwtDecoder) {
 		try {
 			Map<String, Object> parameters = accessTokenResponse.getAdditionalParameters();

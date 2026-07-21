@@ -47,12 +47,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 /**
  * An implementation of an {@link AbstractAuthenticationProcessingFilter} for OAuth 2.0
  * Login.
+ * 一个用于OAuth 2.0登录的实现版本
  *
  * <p>
  * This authentication {@code Filter} handles the processing of an OAuth 2.0 Authorization
  * Response for the authorization code grant flow and delegates an
  * {@link OAuth2LoginAuthenticationToken} to the {@link AuthenticationManager} to log in
  * the End-User.
+ * 负责处理OAuth2.0 认证授权响应的相关操作
  *
  * <p>
  * The OAuth 2.0 Authorization Response is processed as follows:
@@ -162,6 +164,7 @@ public class OAuth2LoginAuthenticationFilter extends AbstractAuthenticationProce
 	 * http://127.0.0.1:8080/login/oauth2/code/messaging-client-oidc?
 	 * code=nHXv7qxQKNMgLwqakDYLddvxzDOfTfBhm1mbJnE4t0q6TM_1_S4CCgQlvgv3TqdfU3Meq5nBzvY7_f4PwT7JSabAp9u2A3R3SybMm8ZJKNc5G7lrWrZT_sb1HS6kZSGD
 	 * &state=DnzVly8NDtTFPqID7d7vbBMzPOeYBomICv6xtjlf6bg%3D
+	 * 授权服务生成授权码后回调给客户端
 	 *
 	 * @param request from which to extract parameters and perform the authentication
 	 * @param response the response, which may be needed if the implementation has to do a
@@ -173,6 +176,7 @@ public class OAuth2LoginAuthenticationFilter extends AbstractAuthenticationProce
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
 		MultiValueMap<String, String> params = OAuth2AuthorizationResponseUtils.toMultiMap(request.getParameterMap());
+		// 判断当前请求是否包含一个合法的授权响应
 		if (!OAuth2AuthorizationResponseUtils.isAuthorizationResponse(params)) {
 			OAuth2Error oauth2Error = new OAuth2Error(OAuth2ErrorCodes.INVALID_REQUEST);
 			throw new OAuth2AuthenticationException(oauth2Error, oauth2Error.toString());
@@ -202,6 +206,7 @@ public class OAuth2LoginAuthenticationFilter extends AbstractAuthenticationProce
 		OAuth2LoginAuthenticationToken authenticationRequest = new OAuth2LoginAuthenticationToken(clientRegistration,
 				new OAuth2AuthorizationExchange(authorizationRequest, authorizationResponse));
 		authenticationRequest.setDetails(authenticationDetails);
+		// 构建OAuth2AuthenticationToken
 		OAuth2LoginAuthenticationToken authenticationResult = (OAuth2LoginAuthenticationToken) this
 			.getAuthenticationManager()
 			.authenticate(authenticationRequest);

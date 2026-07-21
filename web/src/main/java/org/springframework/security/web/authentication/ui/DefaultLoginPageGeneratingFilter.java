@@ -42,8 +42,8 @@ import org.springframework.web.util.HtmlUtils;
 /**
  * For internal use with namespace configuration in the case where a user doesn't
  * configure a login page. The configuration code will insert this filter in the chain
- * instead.
- *
+ * instead. 用户没有配置登录页面的情况下，配置代码将插入此过滤器链
+ * <p>
  * Will only work if a redirect is used to the login page.
  *
  * @author Luke Taylor

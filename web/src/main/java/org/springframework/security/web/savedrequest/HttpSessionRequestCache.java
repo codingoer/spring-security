@@ -102,6 +102,7 @@ public class HttpSessionRequestCache implements RequestCache {
 
 	@Override
 	public HttpServletRequest getMatchingRequest(HttpServletRequest request, HttpServletResponse response) {
+		// 只有显式带了某个“继续处理 saved request”的参数时，才尝试从 session 恢复之前保存的请求。
 		if (this.matchingRequestParameterName != null) {
 			if (!StringUtils.hasText(request.getQueryString())
 					|| !UriComponentsBuilder.fromUriString(UrlUtils.buildRequestUrl(request))

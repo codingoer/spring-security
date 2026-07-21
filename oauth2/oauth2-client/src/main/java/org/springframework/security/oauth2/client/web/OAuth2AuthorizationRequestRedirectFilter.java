@@ -43,6 +43,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 /**
  * This {@code Filter} initiates the authorization code grant flow by redirecting the
  * End-User's user-agent to the Authorization Server's Authorization Endpoint.
+ * 将用户代理重定向至授权服务器的授权端点，来启动授权流程
  *
  * <p>
  * It builds the OAuth 2.0 Authorization Request, which is used as the redirect
@@ -235,7 +236,7 @@ public class OAuth2AuthorizationRequestRedirectFilter extends OncePerRequestFilt
 	}
 
 	/**
-	 * 将用户代理重定向到授权服务器的授权端点
+	 * 将用户代理重定向到授权服务器的授权端点。《发令枪》
 	 * <p>
 	 * 对于授权码模式，会先将授权请求保存到存储库中，以便在回调时进行验证（如校验 state 参数防止 CSRF 攻击）。
 	 * 然后执行 HTTP 重定向，将用户导向授权服务器的授权页面。
@@ -252,6 +253,7 @@ public class OAuth2AuthorizationRequestRedirectFilter extends OncePerRequestFilt
 			// 保存授权请求
 			this.authorizationRequestRepository.saveAuthorizationRequest(authorizationRequest, request, response);
 		}
+		// 执行重定向
 		this.authorizationRedirectStrategy.sendRedirect(request, response,
 				authorizationRequest.getAuthorizationRequestUri());
 	}
